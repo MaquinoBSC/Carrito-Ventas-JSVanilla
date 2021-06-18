@@ -107,7 +107,6 @@ async function loadProductsCart(){
         const idProductsCart= Array.from(new Set(idProductsSplit));
         
         idProductsCart.forEach((id)=> {
-            console.log("Entramos");
             products.forEach(product=> {
                 if(id == product.id){
 
@@ -121,8 +120,8 @@ async function loadProductsCart(){
                                 <p>${product.name}</p>
                                 <p>$${totalPrice.toFixed(2)} mxn</p>
                                 <p class="change-quantity">
-                                    <button>-</button>
-                                    <button>+</button>
+                                    <button onclick="decrementProduct(${product.id})">-</button>
+                                    <button onclick="incrementProduct(${product.id})">+</button>
                                 </p>
                                 <p class="cart-product-delete">
                                     <button onclick="deleteProductCart(${product.id})">Eliminar</button>
@@ -161,6 +160,43 @@ function deleteProductCart(idProduct){
     }
 
     const idsLocalStorage= localStorage.getItem(CART_PRODUCTS);
+    if(!idsLocalStorage){
+        localStorage.removeItem(CART_PRODUCTS);
+    }
+
+    loadProductsCart();
+}
+
+function incrementProduct(idProduct){
+    addProductCart(idProduct);
+}
+
+function decrementProduct(idProduct){
+    let idsLocalStorage= localStorage.getItem(CART_PRODUCTS);
+    const idsArray= idsLocalStorage.split(',');
+    const deletedPosition= idsArray.lastIndexOf(idProduct.toString());
+
+    if(deletedPosition !== -1){
+        idsArray.splice(deletedPosition, 1);
+    }
+    
+    if(idsArray){
+        let count= 0;
+        let idString= "";
+
+        idsArray.forEach((id)=> {
+            count++;
+            if(count < idsArray.length){
+                idString += id + ',';
+            }
+            else{
+                idString += id;
+            }
+        });
+        localStorage.setItem(CART_PRODUCTS, idString);
+    }
+
+    idsLocalStorage= localStorage.getItem(CART_PRODUCTS);
     if(!idsLocalStorage){
         localStorage.removeItem(CART_PRODUCTS);
     }
