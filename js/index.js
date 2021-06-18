@@ -86,7 +86,6 @@ function addProductCart(idProduct){
     loadProductsCart();
 }
 
-
 async function loadProductsCart(){
     const products= await getProductsDB();
 
@@ -126,7 +125,7 @@ async function loadProductsCart(){
                                     <button>+</button>
                                 </p>
                                 <p class="cart-product-delete">
-                                    <button>Eliminar</button>
+                                    <button onclick="deleteProductCart(${product.id})">Eliminar</button>
                                 </p>
                             </div>
                         </div>
@@ -140,6 +139,35 @@ async function loadProductsCart(){
     document.getElementsByClassName('cart-products')[0].innerHTML= html;
 }
 
+function deleteProductCart(idProduct){
+    const idProductCart= localStorage.getItem(CART_PRODUCTS);
+    const arrayIdProductsCart= idProductCart.split(',');
+    const resultIdDelete= deleteAllIds(idProduct, arrayIdProductsCart);
+
+    if(resultIdDelete){
+        let count= 0;
+        let idString= "";
+
+        resultIdDelete.forEach((id)=> {
+            count++;
+            if(count < resultIdDelete.length){
+                idString += id + ',';
+            }
+            else{
+                idString += id;
+            }
+        });
+        localStorage.setItem(CART_PRODUCTS, idString);
+    }
+
+    const idsLocalStorage= localStorage.getItem(CART_PRODUCTS);
+    if(!idsLocalStorage){
+        localStorage.removeItem(CART_PRODUCTS);
+    }
+
+    loadProductsCart();
+}
+
 function countDuplicatesID(value, arrayIds){
     let count= 0;
 
@@ -150,4 +178,10 @@ function countDuplicatesID(value, arrayIds){
     });
 
     return count;
+}
+
+function deleteAllIds(id, arrayIds){
+    return arrayIds.filter((itemId)=> {
+        return itemId != id
+    })
 }
